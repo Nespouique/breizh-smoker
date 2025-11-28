@@ -150,47 +150,47 @@ export function LandingPage() {
                         </p>
 
                         {/* Sessions carousel */}
-                        <div className="flex items-center justify-center gap-4">
+                        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 px-2">
                             {/* Espace pour équilibrer le chevron + séparateur à droite */}
                             {olderSmokes.length > 0 && (
-                                <div className="w-[72px] flex-shrink-0" />
+                                <div className="hidden md:block w-[72px] flex-shrink-0" />
                             )}
 
                             {/* Carte Nouvelle session */}
                             <Card 
-                                className="flex-shrink-0 cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-48"
+                                className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-36 sm:w-48 flex-shrink"
                                 onClick={() => setShowNewSmokeDialog(true)}
                             >
-                                <CardHeader className="pb-2 text-center py-3">
-                                    <CardTitle className="text-base">Nouvelle session</CardTitle>
+                                <CardHeader className="pb-2 text-center py-3 px-3 sm:px-6">
+                                    <CardTitle className="text-sm sm:text-base">Nouvelle session</CardTitle>
                                 </CardHeader>
-                                <CardContent className="pt-0 pb-3 flex justify-center">
+                                <CardContent className="pt-0 pb-3 flex justify-center px-3 sm:px-6">
                                     <div className="p-2 rounded-full border-2 border-dashed border-muted-foreground/50">
-                                        <Plus className="w-5 h-5 text-muted-foreground" />
+                                        <Plus className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                                     </div>
                                 </CardContent>
                             </Card>
 
                             {/* Séparateur */}
                             {recentSmokes.length > 0 && (
-                                <span className="text-muted-foreground text-2xl">···</span>
+                                <span className="hidden sm:inline text-muted-foreground text-2xl">···</span>
                             )}
 
                             {/* Session la plus récente (carte principale) */}
                             {recentSmokes[0] && (
                                 <Card 
-                                    className="flex-shrink-0 cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-56"
+                                    className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-40 sm:w-56 flex-shrink"
                                     onClick={() => navigate(`/smoke/${recentSmokes[0].id}`)}
                                 >
-                                    <CardHeader className="pb-2 text-center">
-                                        <CardTitle className="text-xl">{recentSmokes[0].name}</CardTitle>
-                                        <CardDescription>
+                                    <CardHeader className="pb-2 text-center px-3 sm:px-6">
+                                        <CardTitle className="text-base sm:text-xl truncate">{recentSmokes[0].name}</CardTitle>
+                                        <CardDescription className="text-xs sm:text-sm">
                                             {new Date(recentSmokes[0].created_at).toLocaleDateString('fr-FR')}
                                         </CardDescription>
                                     </CardHeader>
-                                    <CardContent className="pt-0">
-                                        <p className="text-sm text-muted-foreground text-center flex items-center justify-center gap-1">
-                                            Accéder à la session <ChevronRight className="w-4 h-4" />
+                                    <CardContent className="pt-0 px-3 sm:px-6">
+                                        <p className="text-xs sm:text-sm text-muted-foreground text-center flex items-center justify-center gap-1">
+                                            Accéder à la session <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
                                         </p>
                                     </CardContent>
                                 </Card>
@@ -199,18 +199,18 @@ export function LandingPage() {
                             {/* Séparateur + 2ème session */}
                             {recentSmokes[1] && (
                                 <>
-                                    <span className="text-muted-foreground text-2xl">···</span>
+                                    <span className="hidden sm:inline text-muted-foreground text-2xl">···</span>
                                     <Card 
-                                        className="flex-shrink-0 cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-48"
+                                        className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-36 sm:w-48 flex-shrink"
                                         onClick={() => navigate(`/smoke/${recentSmokes[1].id}`)}
                                     >
-                                        <CardHeader className="pb-2 text-center py-3">
-                                            <CardTitle className="text-base">{recentSmokes[1].name}</CardTitle>
+                                        <CardHeader className="pb-2 text-center py-3 px-3 sm:px-6">
+                                            <CardTitle className="text-sm sm:text-base truncate">{recentSmokes[1].name}</CardTitle>
                                             <CardDescription className="text-xs">
                                                 {new Date(recentSmokes[1].created_at).toLocaleDateString('fr-FR')}
                                             </CardDescription>
                                         </CardHeader>
-                                        <CardContent className="pt-0 pb-3">
+                                        <CardContent className="pt-0 pb-3 px-3 sm:px-6">
                                             <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
                                                 Accéder à la session <ChevronRight className="w-3 h-3" />
                                             </p>
@@ -223,10 +223,10 @@ export function LandingPage() {
                             {olderSmokes.length > 0 && (
                                 <button
                                     onClick={() => setShowAllSessionsDialog(true)}
-                                    className="w-14 flex-shrink-0 flex items-center justify-center p-3 rounded-full bg-muted/50 hover:bg-muted transition-colors"
+                                    className="w-10 sm:w-14 flex-shrink-0 flex items-center justify-center p-2 sm:p-3 rounded-full bg-muted/50 hover:bg-muted transition-colors"
                                     aria-label="Voir les sessions plus anciennes"
                                 >
-                                    <ChevronRight className="w-8 h-8 text-muted-foreground" />
+                                    <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground" />
                                 </button>
                             )}
                         </div>
@@ -337,7 +337,7 @@ export function LandingPage() {
 
             {/* All Sessions Dialog */}
             <Dialog open={showAllSessionsDialog} onOpenChange={setShowAllSessionsDialog}>
-                <DialogContent className="max-w-3xl" onOpenAutoFocus={(e) => e.preventDefault()}>
+                <DialogContent className="max-w-[95vw] sm:max-w-3xl max-h-[85vh] overflow-y-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
                     <DialogHeader>
                         <DialogTitle>Toutes les sessions</DialogTitle>
                         <DialogDescription>
@@ -345,7 +345,7 @@ export function LandingPage() {
                         </DialogDescription>
                     </DialogHeader>
                     <div className="py-4">
-                        <div className="grid gap-4 md:grid-cols-3">
+                        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
                             {olderSmokes.map((smoke) => (
                                 <Card 
                                     key={smoke.id}
@@ -362,15 +362,15 @@ export function LandingPage() {
                                         }
                                     }}
                                 >
-                                    <CardHeader className="pb-2 text-center">
-                                        <CardTitle className="text-base">{smoke.name}</CardTitle>
-                                        <CardDescription className="text-sm">
+                                    <CardHeader className="pb-2 text-center px-3 sm:px-6">
+                                        <CardTitle className="text-sm sm:text-base truncate">{smoke.name}</CardTitle>
+                                        <CardDescription className="text-xs sm:text-sm">
                                             {new Date(smoke.created_at).toLocaleDateString('fr-FR')}
                                         </CardDescription>
                                     </CardHeader>
-                                    <CardContent className="pt-0">
-                                        <p className="text-sm text-muted-foreground text-center flex items-center justify-center gap-1">
-                                            Accéder à la session <ChevronRight className="w-4 h-4" />
+                                    <CardContent className="pt-0 px-3 sm:px-6">
+                                        <p className="text-xs sm:text-sm text-muted-foreground text-center flex items-center justify-center gap-1">
+                                            Accéder à la session <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
                                         </p>
                                     </CardContent>
                                 </Card>
