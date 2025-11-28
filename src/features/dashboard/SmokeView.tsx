@@ -1,0 +1,266 @@
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
+import type { Smoke, Item } from '@/types';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import { ItemFormDialog } from '../wizard/ItemFormDialog';
+import { ProcessDialog } from '../wizard/ProcessDialog';
+import { WeightTrackingDialog } from '../wizard/WeightTrackingDialog';
+import { ItemCard } from './ItemCard';
+import { Plus, ArrowLeft, Flame } from 'lucide-react';
+
+type DialogType = 'form' | 'process' | 'tracking' | null;
+
+export function SmokeView() {
+    const { smokeId } = useParams<{ smokeId: string }>();
+    const navigate = useNavigate();
+    const [smoke, setSmoke] = useState<Smoke | null>(null);
+    const [items, setItems] = useState<Item[]>([]);
+    const [activeDialog, setActiveDialog] = useState<DialogType>(null);
+    const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+    const [notes, setNotes] = useState('');
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        loadSmoke();
+    }, [smokeId]);
+
+    async function loadSmoke() {
+        if (!smokeId) return;
+
+        setLoading(true);
+
+        // Get smoke by ID
+        const { data: smokeData, error } = await supabase
+            .from('smokes')
+            .select('*')
+            .eq('id', parseInt(smokeId))
+            .single();
+
+        if (error) {
+            console.error('Error loading smoke:', error);
+            navigate('/');
+            return;
+        }
+
+        setSmoke(smokeData);
+        setNotes(smokeData?.notes || '');
+
+        // Load items for this smoke
+        const { data: itemsData, error: itemsError } = await supabase
+            .from('items')
+            .select('*')
+            .eq('smoke_id', smokeData.id)
+            .order('name', { ascending: true });
+
+        if (itemsError) {
+            console.error('Error loading items:', itemsError);
+        } else {
+            setItems(itemsData || []);
+        }
+
+        setLoading(false);
+    }
+
+    async function saveNotes() {
+        if (!smoke) return;
+
+        const { error } = await supabase
+            .from('smokes')
+            .update({ notes })
+            .eq('id', smoke.id);
+
+        if (error) {
+            console.error('Error saving notes:', error);
+        }
+    }
+
+    function handleEditItem(item: Item) {
+        setSelectedItem(item);
+        setActiveDialog('form');
+    }
+
+    function handleProcessItem(item: Item) {
+        setSelectedItem(item);
+        setActiveDialog('process');
+    }
+
+    function handleTrackingItem(item: Item) {
+        setSelectedItem(item);
+        setActiveDialog('tracking');
+    }
+
+    function handleOpenNewItemForm() {
+        setSelectedItem(null);
+        setActiveDialog('form');
+    }
+
+    function handleCloseDialog() {
+        setActiveDialog(null);
+        setSelectedItem(null);
+    }
+
+    async function handleItemSaved() {
+        await loadSmoke();
+    }
+
+    async function handleItemUpdated() {
+        // Reload items and update selectedItem with fresh data
+        if (!smoke) return;
+        
+        const { data: itemsData } = await supabase
+            .from('items')
+            .select('*')
+            .eq('smoke_id', smoke.id)
+            .order('name', { ascending: true });
+
+        if (itemsData) {
+            setItems(itemsData);
+            // Update selectedItem with fresh data
+            if (selectedItem) {
+                const updatedItem = itemsData.find(i => i.id === selectedItem.id);
+                if (updatedItem) {
+                    setSelectedItem(updatedItem);
+                }
+            }
+        }
+    }
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-pulse flex items-center gap-3">
+                    <Flame className="w-8 h-8 text-orange-500" />
+                    <span className="text-lg">Chargement...</span>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen">
+            {/* Header */}
+            <header className="border-b border-border/50 bg-background/80 backdrop-blur sticky top-0 z-40">
+                <div className="container mx-auto px-6 py-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <Button 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => navigate('/')}
+                            >
+                                <ArrowLeft className="h-5 w-5" />
+                            </Button>
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg">
+                                    <Flame className="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                    <h1 className="text-2xl font-bold">{smoke?.name}</h1>
+                                    <p className="text-sm text-muted-foreground">
+                                        {smoke && new Date(smoke.created_at).toLocaleDateString('fr-FR', {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric'
+                                        })}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <Button 
+                            onClick={handleOpenNewItemForm} 
+                            className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white"
+                        >
+                            <Plus className="mr-2 h-4 w-4" />
+                            Ajouter un morceau
+                        </Button>
+                    </div>
+                </div>
+            </header>
+
+            <main className="container mx-auto px-6 py-8 max-w-7xl">
+                {/* Items Grid */}
+                {items.length > 0 ? (
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-8">
+                        {items.map((item) => (
+                            <ItemCard 
+                                key={item.id} 
+                                item={item} 
+                                onEdit={handleEditItem}
+                                onProcess={handleProcessItem}
+                                onTracking={handleTrackingItem}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <Card className="p-12 bg-card/50 backdrop-blur border-dashed mb-8">
+                        <div className="text-center">
+                            <div className="flex justify-center mb-4">
+                                <div className="p-4 bg-muted rounded-full">
+                                    <Plus className="w-8 h-8 text-muted-foreground" />
+                                </div>
+                            </div>
+                            <p className="text-lg mb-2 font-medium">Aucun morceau pour cette session</p>
+                            <p className="text-sm text-muted-foreground mb-6">
+                                Cliquez sur "Ajouter un morceau" pour commencer
+                            </p>
+                            <Button 
+                                onClick={handleOpenNewItemForm}
+                                variant="outline"
+                            >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Ajouter un morceau
+                            </Button>
+                        </div>
+                    </Card>
+                )}
+
+                {/* Notes Section */}
+                <Card className="bg-card/50 backdrop-blur">
+                    <CardHeader>
+                        <CardTitle>Notes de la session</CardTitle>
+                        <CardDescription>
+                            Retours d'expérience et remarques pour les prochaines sessions
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Textarea
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            onBlur={saveNotes}
+                            placeholder="Ajoutez vos notes ici..."
+                            className="min-h-32 bg-background/50"
+                        />
+                    </CardContent>
+                </Card>
+            </main>
+
+            {/* Dialogs */}
+            {activeDialog === 'form' && smoke && (
+                <ItemFormDialog
+                    smokeId={smoke.id}
+                    item={selectedItem}
+                    onClose={handleCloseDialog}
+                    onSaved={handleItemSaved}
+                />
+            )}
+
+            {activeDialog === 'process' && selectedItem && (
+                <ProcessDialog
+                    item={selectedItem}
+                    onClose={handleCloseDialog}
+                    onUpdated={handleItemUpdated}
+                />
+            )}
+
+            {activeDialog === 'tracking' && selectedItem && (
+                <WeightTrackingDialog
+                    item={selectedItem}
+                    onClose={handleCloseDialog}
+                />
+            )}
+        </div>
+    );
+}
