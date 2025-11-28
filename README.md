@@ -1,73 +1,69 @@
-# React + TypeScript + Vite
+# 🥓 Breizh Smoker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Application de suivi de fumage et d'affinage de viandes et poissons.
 
-Currently, two official plugins are available:
+## 📖 Description
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Breizh Smoker est une application web permettant de gérer et suivre vos sessions de fumage, salaison et affinage. Elle vous aide à :
 
-## React Compiler
+- **Créer des sessions** de fumage/affinage avec plusieurs morceaux
+- **Suivre l'évolution du poids** de chaque pièce au cours de l'affinage
+- **Visualiser les projections** de perte de poids pour atteindre votre cible
+- **Documenter vos processus** de préparation, salaison et fumage
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ Fonctionnalités
 
-## Expanding the ESLint configuration
+### Gestion des morceaux
+- Ajout de morceaux avec nom, poids initial et icône personnalisée
+- Configuration du pourcentage de perte cible
+- Suivi du statut (préparation, salaison, fumage, affinage, terminé)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Suivi des pesées
+- Enregistrement des pesées avec date et heure
+- Calcul automatique de la perte de poids actuelle
+- Graphique d'évolution avec projection vers le poids cible
+- Estimation de la date de fin d'affinage
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Processus de préparation
+- Documentation des étapes de préparation
+- Suivi de la salaison (type de sel, durée, retournements)
+- Configuration du fumage (type de bois, durée, température)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🛠️ Technologies
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- **Frontend** : React 19 + TypeScript + Vite
+- **UI** : Tailwind CSS + shadcn/ui
+- **Graphiques** : Recharts
+- **Backend** : Supabase (PostgreSQL + Auth)
+- **Date** : date-fns
+
+## 🚀 Installation
+
+```bash
+# Cloner le repo
+git clone https://github.com/Nespouique/breizh-smoker.git
+cd breizh-smoker
+
+# Installer les dépendances
+npm install
+
+# Lancer en développement
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## ⚙️ Configuration
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Créez un fichier `.env.local` avec vos credentials Supabase :
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
+
+## 📱 Captures d'écran
+
+*À venir*
+
+## 📄 Licence
+
+MIT
