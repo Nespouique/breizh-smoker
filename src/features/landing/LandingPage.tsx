@@ -150,23 +150,23 @@ export function LandingPage() {
                         </p>
 
                         {/* Sessions carousel */}
-                        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 px-4">
+                        <div className="flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 sm:gap-4 px-2 sm:px-0">
                             {/* Espace pour équilibrer le chevron + séparateur à droite */}
                             {olderSmokes.length > 0 && (
-                                <div className="hidden md:block w-[72px] flex-shrink-0" />
+                                <div className="hidden sm:block w-[72px] flex-shrink-0" />
                             )}
 
                             {/* Carte Nouvelle session */}
                             <Card 
-                                className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-36 sm:w-48 flex-shrink"
+                                className="flex-shrink-0 cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-[calc(50%-4px)] sm:w-48"
                                 onClick={() => setShowNewSmokeDialog(true)}
                             >
-                                <CardHeader className="pb-2 text-center py-3 px-3 sm:px-6">
+                                <CardHeader className="pb-2 text-center py-3">
                                     <CardTitle className="text-sm sm:text-base">Nouvelle session</CardTitle>
                                 </CardHeader>
-                                <CardContent className="pt-0 pb-3 flex justify-center px-3 sm:px-6">
+                                <CardContent className="pt-0 pb-3 flex justify-center">
                                     <div className="p-2 rounded-full border-2 border-dashed border-muted-foreground/50">
-                                        <Plus className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
+                                        <Plus className="w-5 h-5 text-muted-foreground" />
                                     </div>
                                 </CardContent>
                             </Card>
@@ -179,18 +179,18 @@ export function LandingPage() {
                             {/* Session la plus récente (carte principale) */}
                             {recentSmokes[0] && (
                                 <Card 
-                                    className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-40 sm:w-56 flex-shrink"
+                                    className="flex-shrink-0 cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-[calc(50%-4px)] sm:w-56"
                                     onClick={() => navigate(`/smoke/${recentSmokes[0].id}`)}
                                 >
-                                    <CardHeader className="pb-2 text-center px-3 sm:px-6">
+                                    <CardHeader className="pb-2 text-center">
                                         <CardTitle className="text-base sm:text-xl truncate">{recentSmokes[0].name}</CardTitle>
                                         <CardDescription className="text-xs sm:text-sm">
                                             {new Date(recentSmokes[0].created_at).toLocaleDateString('fr-FR')}
                                         </CardDescription>
                                     </CardHeader>
-                                    <CardContent className="pt-0 px-3 sm:px-6">
+                                    <CardContent className="pt-0">
                                         <p className="text-xs sm:text-sm text-muted-foreground text-center flex items-center justify-center gap-1">
-                                            Accéder à la session <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                                            Accéder à la session <ChevronRight className="w-4 h-4" />
                                         </p>
                                     </CardContent>
                                 </Card>
@@ -201,16 +201,16 @@ export function LandingPage() {
                                 <>
                                     <span className="hidden sm:inline text-muted-foreground text-2xl">···</span>
                                     <Card 
-                                        className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-36 sm:w-48 flex-shrink"
+                                        className="flex-shrink-0 cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-[calc(50%-4px)] sm:w-48"
                                         onClick={() => navigate(`/smoke/${recentSmokes[1].id}`)}
                                     >
-                                        <CardHeader className="pb-2 text-center py-3 px-3 sm:px-6">
+                                        <CardHeader className="pb-2 text-center py-3">
                                             <CardTitle className="text-sm sm:text-base truncate">{recentSmokes[1].name}</CardTitle>
                                             <CardDescription className="text-xs">
                                                 {new Date(recentSmokes[1].created_at).toLocaleDateString('fr-FR')}
                                             </CardDescription>
                                         </CardHeader>
-                                        <CardContent className="pt-0 pb-3 px-3 sm:px-6">
+                                        <CardContent className="pt-0 pb-3">
                                             <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
                                                 Accéder à la session <ChevronRight className="w-3 h-3" />
                                             </p>
