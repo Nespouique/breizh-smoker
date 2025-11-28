@@ -150,7 +150,7 @@ export function LandingPage() {
                         </p>
 
                         {/* Sessions carousel */}
-                        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 px-2">
+                        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 px-4">
                             {/* Espace pour équilibrer le chevron + séparateur à droite */}
                             {olderSmokes.length > 0 && (
                                 <div className="hidden md:block w-[72px] flex-shrink-0" />
