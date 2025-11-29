@@ -241,7 +241,7 @@ function InfoStepContent() {
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Nom du morceau *</FormLabel>
+                            <FormLabel><span className="sm:hidden">Nom *</span><span className="hidden sm:inline">Nom du morceau *</span></FormLabel>
                             <FormControl>
                                 <Input {...field} placeholder="Ex : Porc - Filet mignon 1" />
                             </FormControl>
@@ -398,7 +398,7 @@ function SpicesEditor() {
                     {spices.map((spice, index) => (
                         <div key={index} className="flex items-center gap-2">
                             <Input
-                                placeholder="Nom de l'épice"
+                                placeholder="Nom"
                                 value={spice.name}
                                 onChange={(e) => updateSpice(index, 'name', e.target.value)}
                                 className={`flex-1 ${hasError(index, 'name') ? 'border-destructive' : ''}`}
@@ -409,7 +409,7 @@ function SpicesEditor() {
                                 minValue={0}
                                 step={1}
                                 suffix="g"
-                                className="w-32"
+                                className="w-24"
                                 error={hasError(index, 'amount')}
                             />
                             <Button
@@ -473,11 +473,11 @@ function CuringStepContent({
                 <p className="text-sm text-muted-foreground">Choisissez la méthode de salaison</p>
             </div>
             
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
                     type="button"
                     onClick={() => handleSelectMethod('vacuum')}
-                    className={`p-4 rounded-lg border-2 text-left transition-all ${
+                    className={`p-3 rounded-lg border-2 text-left transition-all ${
                         curingMethod === 'vacuum'
                             ? 'border-blue-500 bg-blue-500/10'
                             : 'border-border hover:border-blue-500/50 hover:bg-blue-500/5'
@@ -500,7 +500,7 @@ function CuringStepContent({
                 <button
                     type="button"
                     onClick={() => handleSelectMethod('traditional')}
-                    className={`p-4 rounded-lg border-2 text-left transition-all ${
+                    className={`p-3 rounded-lg border-2 text-left transition-all ${
                         curingMethod === 'traditional'
                             ? 'border-amber-500 bg-amber-500/10'
                             : 'border-border hover:border-amber-500/50 hover:bg-amber-500/5'

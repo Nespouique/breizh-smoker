@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import {
     Flame,
     CloudSnow,
@@ -128,67 +129,82 @@ export function LandingPage() {
 
     return (
         <div className="min-h-screen">
+            {/* Header avec bouton theme */}
+            <header className="fixed top-0 left-0 right-0 z-50">
+                <div className="container mx-auto px-4 py-4">
+                    <div className="flex items-center justify-end">
+                        <ThemeToggle />
+                    </div>
+                </div>
+            </header>
+
             {/* Hero Section */}
-            <section className="relative overflow-hidden">
+            <section className="relative overflow-hidden min-h-screen flex flex-col">
                 <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-transparent to-red-500/10" />
                 <div className="absolute top-20 left-10 w-72 h-72 bg-orange-500/20 rounded-full blur-3xl" />
                 <div className="absolute bottom-10 right-10 w-96 h-96 bg-red-500/10 rounded-full blur-3xl" />
                 
-                <div className="container mx-auto px-6 py-16 relative">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <div className="flex justify-center mb-6">
-                            <div className="p-4 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl shadow-lg shadow-orange-500/25">
-                                <Flame className="w-12 h-12 text-white" />
+                <div className="container mx-auto px-6 py-[8vh] md:py-16 relative flex-1 flex flex-col">
+                    <div className="max-w-4xl mx-auto text-center flex-1 flex flex-col justify-center">
+                        {/* Logo et titre */}
+                        <div>
+                            <div className="flex justify-center mb-[3vh] md:mb-6">
+                                <div className="p-3 md:p-4 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl shadow-lg shadow-orange-500/25">
+                                    <Flame className="w-10 h-10 md:w-12 md:h-12 text-white" />
+                                </div>
                             </div>
+                            <h1 className="text-4xl md:text-7xl font-bold mb-[3vh] md:mb-6 bg-gradient-to-r from-orange-400 via-red-500 to-orange-600 bg-clip-text text-transparent">
+                                Breizh Smoker
+                            </h1>
+                            <p className="text-lg md:text-2xl text-muted-foreground mb-[10vh] md:mb-12 max-w-2xl mx-auto">
+                                Votre assistant pour maîtriser l'art de la fumaison artisanale. 
+                                Suivez chaque étape, de la préparation à l'affinage.
+                            </p>
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-orange-400 via-red-500 to-orange-600 bg-clip-text text-transparent">
-                            Breizh Smoker
-                        </h1>
-                        <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                            Votre assistant pour maîtriser l'art de la fumaison artisanale. 
-                            Suivez chaque étape, de la préparation à l'affinage.
-                        </p>
 
-                        {/* Sessions carousel */}
-                        <div className="flex items-center justify-center gap-4">
-                            {/* Espace pour équilibrer le chevron + séparateur à droite */}
+                        {/* Sessions - Layout vertical sur mobile, horizontal sur desktop */}
+                        <div className="flex flex-col lg:flex-row items-center justify-center gap-[2vh] lg:gap-4 w-full overflow-hidden">
+                            {/* Espace pour équilibrer le chevron + séparateur à droite (desktop only) */}
                             {olderSmokes.length > 0 && (
-                                <div className="w-[72px] flex-shrink-0" />
+                                <div className="hidden lg:block w-[72px] flex-shrink-0" />
                             )}
 
-                            {/* Carte Nouvelle session */}
+                            {/* Carte Nouvelle session - visible sur mobile et desktop */}
                             <Card 
-                                className="flex-shrink-0 cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-48"
+                                className="flex-shrink-0 cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-full max-w-[200px] lg:w-48"
                                 onClick={() => setShowNewSmokeDialog(true)}
                             >
-                                <CardHeader className="pb-2 text-center py-3">
+                                <CardHeader className="pb-2 text-center py-[1.5vh] lg:py-3">
                                     <CardTitle className="text-base">Nouvelle session</CardTitle>
                                 </CardHeader>
-                                <CardContent className="pt-0 pb-3 flex justify-center">
+                                <CardContent className="pt-0 pb-[1.5vh] lg:pb-3 flex justify-center">
                                     <div className="p-2 rounded-full border-2 border-dashed border-muted-foreground/50">
                                         <Plus className="w-5 h-5 text-muted-foreground" />
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            {/* Séparateur */}
+                            {/* Séparateur vertical sur mobile, horizontal sur desktop */}
                             {recentSmokes.length > 0 && (
-                                <span className="text-muted-foreground text-2xl">···</span>
+                                <>
+                                    <div className="lg:hidden w-px h-[2vh] border-l-2 border-dashed border-muted-foreground" />
+                                    <span className="hidden lg:inline text-muted-foreground text-2xl">···</span>
+                                </>
                             )}
 
                             {/* Session la plus récente (carte principale) */}
                             {recentSmokes[0] && (
                                 <Card 
-                                    className="flex-shrink-0 cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-56"
+                                    className="flex-shrink-0 cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-full max-w-[280px] lg:w-56"
                                     onClick={() => navigate(`/smoke/${recentSmokes[0].id}`)}
                                 >
-                                    <CardHeader className="pb-2 text-center">
-                                        <CardTitle className="text-xl">{recentSmokes[0].name}</CardTitle>
+                                    <CardHeader className="pb-2 text-center py-[1.5vh] lg:py-4">
+                                        <CardTitle className="text-lg lg:text-xl">{recentSmokes[0].name}</CardTitle>
                                         <CardDescription>
                                             {new Date(recentSmokes[0].created_at).toLocaleDateString('fr-FR')}
                                         </CardDescription>
                                     </CardHeader>
-                                    <CardContent className="pt-0">
+                                    <CardContent className="pt-0 pb-[1.5vh] lg:pb-4">
                                         <p className="text-sm text-muted-foreground text-center flex items-center justify-center gap-1">
                                             Accéder à la session <ChevronRight className="w-4 h-4" />
                                         </p>
@@ -196,12 +212,12 @@ export function LandingPage() {
                                 </Card>
                             )}
 
-                            {/* Séparateur + 2ème session */}
+                            {/* Séparateur + 2ème session (desktop only) */}
                             {recentSmokes[1] && (
                                 <>
-                                    <span className="text-muted-foreground text-2xl">···</span>
+                                    <span className="hidden lg:inline text-muted-foreground text-2xl">···</span>
                                     <Card 
-                                        className="flex-shrink-0 cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-48"
+                                        className="hidden lg:block flex-shrink-0 cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-48"
                                         onClick={() => navigate(`/smoke/${recentSmokes[1].id}`)}
                                     >
                                         <CardHeader className="pb-2 text-center py-3">
@@ -219,15 +235,29 @@ export function LandingPage() {
                                 </>
                             )}
 
-                            {/* Chevron pour voir plus de sessions */}
+                            {/* Chevron pour voir plus de sessions (desktop only) */}
                             {olderSmokes.length > 0 && (
                                 <button
                                     onClick={() => setShowAllSessionsDialog(true)}
-                                    className="w-14 flex-shrink-0 flex items-center justify-center p-3 rounded-full bg-muted/50 hover:bg-muted transition-colors"
+                                    className="hidden lg:flex w-14 flex-shrink-0 items-center justify-center p-3 rounded-full bg-muted/50 hover:bg-muted transition-colors"
                                     aria-label="Voir les sessions plus anciennes"
                                 >
                                     <ChevronRight className="w-8 h-8 text-muted-foreground" />
                                 </button>
+                            )}
+
+                            {/* Bouton Voir plus (mobile/tablette only - quand il y a plus d'1 session) */}
+                            {smokes.length > 1 && (
+                                <div className="flex lg:hidden flex-col items-center gap-[1.5vh]">
+                                    <div className="w-px h-[2vh] border-l-2 border-dashed border-muted-foreground" />
+                                    <button
+                                        onClick={() => setShowAllSessionsDialog(true)}
+                                        className="flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-muted/50 hover:bg-muted transition-colors"
+                                    >
+                                        <span className="text-sm text-muted-foreground">Voir plus</span>
+                                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                                    </button>
+                                </div>
                             )}
                         </div>
                     </div>
@@ -248,7 +278,7 @@ export function LandingPage() {
                         {processSteps.map((step, index) => (
                             <Card key={index} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur w-full md:w-[calc(50%-12px)] lg:w-[calc(25%-18px)]">
                                 <CardHeader className="pb-3">
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex flex-col md:flex-row items-center gap-3">
                                         <div className={`p-2 rounded-lg bg-muted ${step.color}`}>
                                             <step.icon className="w-5 h-5" />
                                         </div>
@@ -258,10 +288,10 @@ export function LandingPage() {
                                             </span>
                                         </div>
                                     </div>
-                                    <CardTitle className="text-lg">{step.title}</CardTitle>
+                                    <CardTitle className="text-lg text-center md:text-left">{step.title}</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <CardDescription className="text-sm leading-relaxed">
+                                    <CardDescription className="text-sm leading-relaxed text-center md:text-left">
                                         {step.description}
                                     </CardDescription>
                                 </CardContent>
@@ -299,7 +329,7 @@ export function LandingPage() {
             {/* Footer */}
             <footer className="py-8 border-t border-border/50">
                 <div className="container mx-auto px-6 text-center text-sm text-muted-foreground">
-                    <p>Fait avec ❤️ pour les amateurs de fumaison artisanale</p>
+                    <p>Fait avec 🔥 pour les amateurs de fumaison artisanale</p>
                 </div>
             </footer>
 
@@ -346,11 +376,13 @@ export function LandingPage() {
                     </DialogHeader>
                     <div className="py-4">
                         <div className="grid gap-4 md:grid-cols-3">
-                            {olderSmokes.map((smoke) => (
+                            {/* Sur mobile/tablette: afficher toutes les sessions sauf la 1ère (slice(1)) */}
+                            {/* Sur desktop (lg:): afficher seulement olderSmokes (à partir de la 3ème) */}
+                            {smokes.slice(1).map((smoke, index) => (
                                 <Card 
                                     key={smoke.id}
                                     tabIndex={0}
-                                    className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                    className={`cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card focus:outline-none focus:ring-2 focus:ring-orange-500 ${index === 0 ? 'lg:hidden' : ''}`}
                                     onClick={() => {
                                         setShowAllSessionsDialog(false);
                                         navigate(`/smoke/${smoke.id}`);

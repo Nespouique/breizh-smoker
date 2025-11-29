@@ -7,11 +7,10 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
-    DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Clock, CalendarPlus } from 'lucide-react';
+import { Check, Clock, CalendarPlus, ListChecks } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
@@ -356,12 +355,15 @@ END:VCALENDAR`;
 
     return (
         <Dialog open onOpenChange={onClose}>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Étapes du processus</DialogTitle>
+                    <DialogTitle className="flex items-center gap-2">
+                        <ListChecks className="h-5 w-5 text-orange-500" />
+                        Étapes du processus
+                    </DialogTitle>
                 </DialogHeader>
 
-                <div className="py-4 space-y-3">
+                <div className="pt-4 space-y-3">
                     {processSteps.map((step, index) => {
                         const isCompleted = index < currentStepIndex;
                         const isCurrent = index === currentStepIndex;
@@ -515,12 +517,6 @@ END:VCALENDAR`;
                         );
                     })}
                 </div>
-
-                <DialogFooter>
-                    <Button variant="outline" onClick={onClose}>
-                        Fermer
-                    </Button>
-                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

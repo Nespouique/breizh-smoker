@@ -142,7 +142,8 @@ const defineStepper = <const Steps extends Stepperize.Step[]>(
                 "data-[variant=vertical]:flex-row",
                 "data-[label-orientation=vertical]:w-full",
                 "data-[label-orientation=vertical]:flex-col",
-                "data-[label-orientation=vertical]:justify-center",
+                "data-[label-orientation=vertical]:justify-start",
+                "data-[label-orientation=vertical]:items-center",
                 "data-[label-orientation=vertical]:text-center",
               ])}
               data-variant={variant}
@@ -375,7 +376,7 @@ const CircleStepIndicator = ({
 const classForNavigationList = cva("flex gap-2", {
   variants: {
     variant: {
-      horizontal: "flex-row items-center justify-between",
+      horizontal: "flex-row items-start justify-between",
       vertical: "flex-col",
       circle: "flex-row items-center justify-between",
     },

@@ -9,7 +9,8 @@ import { ItemFormDialog } from '../wizard/ItemFormDialog';
 import { ProcessDialog } from '../wizard/ProcessDialog';
 import { WeightTrackingDialog } from '../wizard/WeightTrackingDialog';
 import { ItemCard } from './ItemCard';
-import { Plus, ArrowLeft, Flame } from 'lucide-react';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { Plus, Home, Flame } from 'lucide-react';
 
 type DialogType = 'form' | 'process' | 'tracking' | null;
 
@@ -142,48 +143,46 @@ export function SmokeView() {
     return (
         <div className="min-h-screen">
             {/* Header */}
-            <header className="border-b border-border/50 bg-background/80 backdrop-blur sticky top-0 z-40">
-                <div className="container mx-auto px-6 py-4">
+            <header className="border-b border-border/50 bg-background/80 backdrop-blur sticky top-0 z-50">
+                <div className="container mx-auto px-4 py-4">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <Button 
-                                variant="ghost" 
-                                size="icon"
-                                onClick={() => navigate('/')}
-                            >
-                                <ArrowLeft className="h-5 w-5" />
-                            </Button>
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg">
-                                    <Flame className="w-5 h-5 text-white" />
-                                </div>
-                                <div>
-                                    <h1 className="text-2xl font-bold">{smoke?.name}</h1>
-                                    <p className="text-sm text-muted-foreground">
-                                        {smoke && new Date(smoke.created_at).toLocaleDateString('fr-FR', {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric'
-                                        })}
-                                    </p>
-                                </div>
+                        {/* Bouton Home à gauche */}
+                        <Button 
+                            variant="outline" 
+                            size="icon"
+                            className="h-9 w-9"
+                            onClick={() => navigate('/')}
+                        >
+                            <Home className="h-4 w-4" />
+                        </Button>
+
+                        {/* Titre centré */}
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg">
+                                <Flame className="w-5 h-5 text-white" />
+                            </div>
+                            <div className="text-center">
+                                <h1 className="text-xl md:text-2xl font-bold">{smoke?.name}</h1>
+                                <p className="text-xs md:text-sm text-muted-foreground">
+                                    {smoke && new Date(smoke.created_at).toLocaleDateString('fr-FR', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                    })}
+                                </p>
                             </div>
                         </div>
-                        <Button 
-                            onClick={handleOpenNewItemForm} 
-                            className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white"
-                        >
-                            <Plus className="mr-2 h-4 w-4" />
-                            Ajouter un morceau
-                        </Button>
+
+                        {/* Bouton Theme à droite */}
+                        <ThemeToggle />
                     </div>
                 </div>
             </header>
 
-            <main className="container mx-auto px-6 py-8 max-w-7xl">
+            <main className="container mx-auto px-3 sm:px-6 py-6 max-w-7xl">
                 {/* Items Grid */}
                 {items.length > 0 ? (
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-8">
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 mb-8">
                         {items.map((item) => (
                             <ItemCard 
                                 key={item.id} 
@@ -218,7 +217,7 @@ export function SmokeView() {
                 )}
 
                 {/* Notes Section */}
-                <Card className="bg-card/50 backdrop-blur">
+                <Card className="bg-card/50 backdrop-blur mb-20">
                     <CardHeader>
                         <CardTitle>Notes de la session</CardTitle>
                         <CardDescription>
@@ -236,6 +235,15 @@ export function SmokeView() {
                     </CardContent>
                 </Card>
             </main>
+
+            {/* Bouton flottant Ajouter un morceau */}
+            <button
+                onClick={handleOpenNewItemForm}
+                className="fixed bottom-6 right-6 z-50 p-4 rounded-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white shadow-lg shadow-orange-500/25 transition-transform hover:scale-105 active:scale-95"
+                aria-label="Ajouter un morceau"
+            >
+                <Plus className="h-6 w-6" />
+            </button>
 
             {/* Dialogs */}
             {activeDialog === 'form' && smoke && (

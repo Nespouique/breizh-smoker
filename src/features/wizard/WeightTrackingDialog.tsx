@@ -20,11 +20,11 @@ export function WeightTrackingDialog({ item, onClose }: WeightTrackingDialogProp
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <ChartLine className="h-5 w-5 text-orange-500" />
-                        Suivi du poids - {item.name}
+                        Suivi poids - {item.name}
                     </DialogTitle>
                 </DialogHeader>
 
-                <div className="py-4">
+                <div className="py-4 overflow-x-hidden">
                     <WeightTracking item={item} />
                 </div>
             </DialogContent>

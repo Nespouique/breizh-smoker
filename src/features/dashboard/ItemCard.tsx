@@ -95,35 +95,35 @@ export function ItemCard({ item, onEdit, onProcess, onTracking }: ItemCardProps)
     const hasCustomIcon = !!item.icon;
 
     return (
-        <Card className="hover:shadow-lg transition-all duration-300 bg-card/50 backdrop-blur group">
-            <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-primary/10 dark:bg-muted">
+        <Card className="hover:shadow-lg transition-all duration-300 bg-card/50 backdrop-blur group overflow-hidden">
+            <CardHeader className="pb-2 p-3 sm:p-6 sm:pb-3">
+                <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                        <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10 dark:bg-muted shrink-0">
                             {hasCustomIcon ? (
-                                <LazyIcon name={item.icon as IconName} className="h-5 w-5 text-primary" />
+                                <LazyIcon name={item.icon as IconName} className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                             ) : (
-                                <DefaultIcon className="h-5 w-5 text-primary" />
+                                <DefaultIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                             )}
                         </div>
-                        <div>
-                            <CardTitle className="text-lg font-semibold">
+                        <div className="min-w-0">
+                            <CardTitle className="text-base sm:text-lg font-semibold truncate">
                                 {item.name}
                             </CardTitle>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-xs sm:text-sm text-muted-foreground truncate">
                                 {animalLabels[item.type] || item.type}
                                 {item.cut && ` • ${item.cut}`}
                             </p>
                         </div>
                     </div>
-                    <Badge className={`${statusColors[item.status]} text-white cursor-default select-none`}>
+                    <Badge className={`${statusColors[item.status]} text-white cursor-default select-none text-xs shrink-0`}>
                         {statusLabels[item.status]}
                     </Badge>
                 </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 sm:space-y-4 p-3 pt-0 sm:p-6 sm:pt-0">
                 {/* Infos */}
-                <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="grid grid-cols-2 gap-1.5 sm:gap-2 text-xs sm:text-sm">
                     {item.initial_weight && (
                         <div>
                             <span className="text-muted-foreground">Poids initial:</span>
@@ -147,33 +147,33 @@ export function ItemCard({ item, onEdit, onProcess, onTracking }: ItemCardProps)
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-2 pt-2 border-t border-border/50">
+                <div className="flex gap-1.5 sm:gap-2 pt-2 border-t border-border/50">
                     <Button 
                         variant="outline" 
                         size="sm" 
-                        className="flex-1"
+                        className="flex-1 min-w-0 h-8 text-xs sm:text-sm px-2 sm:px-3"
                         onClick={() => onEdit(item)}
                     >
-                        <Pencil className="h-4 w-4 mr-2" />
-                        Modifier
+                        <Pencil className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2 shrink-0" />
+                        <span className="truncate">Modifier</span>
                     </Button>
                     <Button 
                         variant="outline" 
                         size="sm" 
-                        className="flex-1"
+                        className="flex-1 min-w-0 h-8 text-xs sm:text-sm px-2 sm:px-3"
                         onClick={() => onProcess(item)}
                     >
-                        <ListTodo className="h-4 w-4 mr-2" />
-                        Étapes
+                        <ListTodo className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2 shrink-0" />
+                        <span className="truncate">Étapes</span>
                     </Button>
                     <Button 
                         variant="outline" 
                         size="sm" 
-                        className="flex-1"
+                        className="flex-1 min-w-0 h-8 text-xs sm:text-sm px-2 sm:px-3"
                         onClick={() => onTracking(item)}
                     >
-                        <ChartLine className="h-4 w-4 mr-2" />
-                        Suivi
+                        <ChartLine className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2 shrink-0" />
+                        <span className="truncate">Suivi</span>
                     </Button>
                 </div>
             </CardContent>
