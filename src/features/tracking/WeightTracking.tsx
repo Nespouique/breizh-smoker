@@ -544,7 +544,7 @@ export function WeightTracking({ item }: WeightTrackingProps) {
                     {isTargetReached && (
                         <div className="bg-green-500/10 border border-green-500/20 p-1.5 rounded-md text-center">
                             <p className="text-sm leading-tight font-medium text-green-600 dark:text-green-400">
-                                🎉 Objectif atteint ! Le poids cible a été atteint.
+                                Objectif atteint ! Le poids cible a été atteint.
                             </p>
                         </div>
                     )}

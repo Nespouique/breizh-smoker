@@ -15,3 +15,5 @@ Il reste à faire les éléments suivants :
 * Animation en mode fumée sur la home
 * Proposer des recettes ?
 * Ajouter un stylo pour modifier le titre d'une session
+* Au lieu de télécharger le .ics, ouvrir l'appli par défaut de calendrier
+* Sur mobile, la ligne d'ajout d'une pesée ne fonctionne pas bien, on ne voit pas en entier l'heure, et les grammes saisis ne s'affiche pas (enlever le placeholder ou les flèches)

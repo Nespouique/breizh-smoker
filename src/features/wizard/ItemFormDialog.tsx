@@ -632,7 +632,14 @@ function FormStepperComponent({
             salt_amount: item?.salt_amount || 0,
             sugar_amount: item?.sugar_amount || 0,
             pepper_amount: item?.pepper_amount || 0,
-            spices: item?.spices ? JSON.parse(item.spices) : [],
+            spices: item?.spices ? (() => {
+                try {
+                    return JSON.parse(item.spices);
+                } catch {
+                    // Si ce n'est pas du JSON valide, c'est une ancienne valeur texte
+                    return item.spices ? [item.spices] : [];
+                }
+            })() : [],
         },
     });
 
