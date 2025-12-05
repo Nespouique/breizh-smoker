@@ -11,6 +11,7 @@ interface NumberInputProps extends Omit<React.InputHTMLAttributes<HTMLInputEleme
   minValue?: number;
   maxValue?: number;
   step?: number;
+  compact?: boolean;
 }
 
 export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(({
@@ -23,6 +24,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
   minValue,
   maxValue,
   step = 1,
+  compact = false,
   ...props
 }, ref) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -56,7 +58,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
         </label>
       )}
       <div className={cn(
-        "relative inline-flex h-9 w-full items-center overflow-hidden whitespace-nowrap rounded-md border bg-background text-sm shadow-sm shadow-black/5 ring-offset-background transition-shadow focus-within:ring-2 focus-within:ring-offset-2",
+        "relative inline-flex h-9 w-full items-center overflow-hidden whitespace-nowrap rounded-md border bg-background text-xs shadow-sm shadow-black/5 ring-offset-background transition-shadow focus-within:ring-2 focus-within:ring-offset-2",
         error ? "border-destructive focus-within:ring-destructive" : "border-input focus-within:ring-ring"
       )}>
         <input
@@ -67,13 +69,13 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           min={minValue}
           max={maxValue}
           step={step}
-          className="flex-1 min-w-0 bg-transparent px-3 py-2 text-foreground tabular-nums placeholder:text-muted-foreground focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          className="flex-1 min-w-0 bg-transparent px-3 py-2 text-xs text-foreground tabular-nums placeholder:text-muted-foreground focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           {...props}
         />
         {suffix && (
           <span className="text-muted-foreground text-sm pr-2 shrink-0">{suffix}</span>
         )}
-        <div className="flex h-full flex-col shrink-0 border-l border-input">
+        <div className={cn("flex h-full flex-col shrink-0 border-l border-input", compact && "hidden sm:flex")}>
           <button
             type="button"
             tabIndex={-1}

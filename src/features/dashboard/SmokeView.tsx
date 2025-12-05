@@ -5,12 +5,13 @@ import type { Smoke, Item } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { ItemFormDialog } from '../wizard/ItemFormDialog';
 import { ProcessDialog } from '../wizard/ProcessDialog';
 import { WeightTrackingDialog } from '../wizard/WeightTrackingDialog';
 import { ItemCard } from './ItemCard';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
-import { Plus, Home, Flame } from 'lucide-react';
+import { Plus, Home, Flame, Pencil, Check, X } from 'lucide-react';
 
 type DialogType = 'form' | 'process' | 'tracking' | null;
 
@@ -23,6 +24,8 @@ export function SmokeView() {
     const [selectedItem, setSelectedItem] = useState<Item | null>(null);
     const [notes, setNotes] = useState('');
     const [loading, setLoading] = useState(true);
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [editedTitle, setEditedTitle] = useState('');
 
     useEffect(() => {
         loadSmoke();
@@ -76,6 +79,36 @@ export function SmokeView() {
         if (error) {
             console.error('Error saving notes:', error);
         }
+    }
+
+    function startEditingTitle() {
+        if (smoke) {
+            setEditedTitle(smoke.name);
+            setIsEditingTitle(true);
+        }
+    }
+
+    function cancelEditingTitle() {
+        setIsEditingTitle(false);
+        setEditedTitle('');
+    }
+
+    async function saveTitle() {
+        if (!smoke || !editedTitle.trim()) return;
+
+        const { error } = await supabase
+            .from('smokes')
+            .update({ name: editedTitle.trim() })
+            .eq('id', smoke.id);
+
+        if (error) {
+            console.error('Error saving title:', error);
+            return;
+        }
+
+        setSmoke({ ...smoke, name: editedTitle.trim() });
+        setIsEditingTitle(false);
+        setEditedTitle('');
     }
 
     function handleEditItem(item: Item) {
@@ -162,7 +195,48 @@ export function SmokeView() {
                                 <Flame className="w-5 h-5 text-white" />
                             </div>
                             <div className="text-center">
-                                <h1 className="text-xl md:text-2xl font-bold">{smoke?.name}</h1>
+                                {isEditingTitle ? (
+                                    <div className="flex items-center gap-2">
+                                        <Input
+                                            value={editedTitle}
+                                            onChange={(e) => setEditedTitle(e.target.value)}
+                                            className="h-8 text-lg font-bold w-[180px] md:w-[250px]"
+                                            autoFocus
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') saveTitle();
+                                                if (e.key === 'Escape') cancelEditingTitle();
+                                            }}
+                                        />
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-7 w-7 text-green-600 hover:text-green-700 hover:bg-green-100"
+                                            onClick={saveTitle}
+                                        >
+                                            <Check className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                            onClick={cancelEditingTitle}
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-2">
+                                        <h1 className="text-xl md:text-2xl font-bold">{smoke?.name}</h1>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                                            onClick={startEditingTitle}
+                                        >
+                                            <Pencil className="h-3.5 w-3.5" />
+                                        </Button>
+                                    </div>
+                                )}
                                 <p className="text-xs md:text-sm text-muted-foreground">
                                     {smoke && new Date(smoke.created_at).toLocaleDateString('fr-FR', {
                                         year: 'numeric',

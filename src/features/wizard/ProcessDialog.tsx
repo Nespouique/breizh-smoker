@@ -116,17 +116,27 @@ export function ProcessDialog({ item, onClose, onUpdated }: ProcessDialogProps) 
         return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
     }
 
-    // Générer et télécharger un fichier .ics
-    function downloadICS(content: string, filename: string) {
+    // Générer et ouvrir un fichier .ics (déclenche l'app calendrier sur mobile)
+    function openICS(content: string, filename: string) {
         const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
         const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        
+        // Sur mobile, window.open déclenche l'app calendrier
+        // Sur desktop, cela ouvre aussi l'app par défaut pour les .ics
+        const opened = window.open(url, '_blank');
+        
+        // Fallback: si window.open est bloqué, on télécharge
+        if (!opened) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Nettoyer l'URL après un délai
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
     // Ajouter rappel pour la fin de salaison
@@ -154,7 +164,7 @@ END:VALARM
 END:VEVENT
 END:VCALENDAR`;
         
-        downloadICS(icsContent, `salaison-${item.name.replace(/\s+/g, '-')}.ics`);
+        openICS(icsContent, `salaison-${item.name.replace(/\s+/g, '-')}.ics`);
     }
 
     // Ajouter rappel pour la fin de séchage
@@ -183,7 +193,7 @@ END:VALARM
 END:VEVENT
 END:VCALENDAR`;
         
-        downloadICS(icsContent, `sechage-${item.name.replace(/\s+/g, '-')}.ics`);
+        openICS(icsContent, `sechage-${item.name.replace(/\s+/g, '-')}.ics`);
     }
 
     // Ajouter rappels récurrents pour les contrôles d'affinage (5 semaines)
@@ -219,7 +229,7 @@ END:VALARM
 END:VEVENT
 END:VCALENDAR`;
         
-        downloadICS(icsContent, `affinage-${item.name.replace(/\s+/g, '-')}.ics`);
+        openICS(icsContent, `affinage-${item.name.replace(/\s+/g, '-')}.ics`);
     }
 
     function fireConfetti() {

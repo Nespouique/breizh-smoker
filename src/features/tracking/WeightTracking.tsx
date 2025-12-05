@@ -381,7 +381,7 @@ export function WeightTracking({ item }: WeightTrackingProps) {
                                     type="time"
                                     value={log.time}
                                     onChange={(e) => updateNewLog(index, 'time', e.target.value)}
-                                    className="w-[70px] bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none text-xs px-2"
+                                    className="w-[75px] bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none text-xs px-2"
                                 />
                                 
                                 {/* Weight Input */}
@@ -391,8 +391,8 @@ export function WeightTracking({ item }: WeightTrackingProps) {
                                     minValue={0}
                                     step={5}
                                     suffix="g"
-                                    className="w-[70px] flex-1 min-w-[60px]"
-                                    placeholder="Poids"
+                                    className="w-[90px] sm:w-[100px] flex-1 min-w-[70px]"
+                                    compact
                                 />
                                 
                                 <Button
