@@ -381,7 +381,7 @@ export function WeightTracking({ item }: WeightTrackingProps) {
                                     type="time"
                                     value={log.time}
                                     onChange={(e) => updateNewLog(index, 'time', e.target.value)}
-                                    className="w-[45px] bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none text-xs px-1.5 shrink-0"
+                                    className="w-auto min-w-[50px] bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none text-xs px-1"
                                 />
                                 
                                 {/* Weight Input */}
@@ -389,21 +389,24 @@ export function WeightTracking({ item }: WeightTrackingProps) {
                                     value={log.weight}
                                     onChange={(value) => updateNewLog(index, 'weight', value)}
                                     minValue={0}
-                                    maxValue={9999}
+                                    maxValue={99999}
                                     step={5}
                                     suffix="g"
-                                    className="w-[70px] flex-1 min-w-[70px]"
+                                    className="w-[75px] shrink-0"
                                     compact
                                 />
+                                
+                                {/* Spacer pour pousser la croix à droite */}
+                                <div className="flex-1" />
                                 
                                 <Button
                                     type="button"
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => removeNewLog(index)}
-                                    className="shrink-0 h-8 w-8 text-muted-foreground hover:text-destructive"
+                                    className="shrink-0 h-4 w-4 text-muted-foreground hover:text-destructive"
                                 >
-                                    <X className="h-4 w-4" />
+                                    <X className="h-2.5 w-2.5" />
                                 </Button>
                             </div>
                         ))}
