@@ -69,7 +69,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           min={minValue}
           max={maxValue}
           step={step}
-          className="flex-1 min-w-0 bg-transparent px-3 py-2 text-xs text-foreground tabular-nums placeholder:text-muted-foreground focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          className="flex-1 min-w-0 bg-transparent px-2 py-2 text-xs text-foreground tabular-nums placeholder:text-muted-foreground focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           {...props}
         />
         {suffix && (

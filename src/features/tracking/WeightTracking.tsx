@@ -345,7 +345,7 @@ export function WeightTracking({ item }: WeightTrackingProps) {
                 {newLogs.length > 0 && (
                     <div className="space-y-2">
                         {newLogs.map((log, index) => (
-                            <div key={index} className="flex flex-wrap items-center gap-2 bg-muted/30 p-2 rounded-lg">
+                            <div key={index} className="flex items-center gap-2 bg-muted/30 p-2 rounded-lg">
                                 {/* Date Picker */}
                                 <Popover 
                                     open={log.isCalendarOpen} 
@@ -354,7 +354,7 @@ export function WeightTracking({ item }: WeightTrackingProps) {
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            className="w-[90px] justify-between font-normal text-xs px-2"
+                                            className="w-[90px] justify-between font-normal text-xs px-2 shrink-0"
                                         >
                                             {format(log.date, 'dd/MM/yy', { locale: fr })}
                                             <ChevronDown className="h-3 w-3 opacity-50" />
@@ -381,7 +381,7 @@ export function WeightTracking({ item }: WeightTrackingProps) {
                                     type="time"
                                     value={log.time}
                                     onChange={(e) => updateNewLog(index, 'time', e.target.value)}
-                                    className="w-[75px] bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none text-xs px-2"
+                                    className="w-[45px] bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none text-xs px-1.5 shrink-0"
                                 />
                                 
                                 {/* Weight Input */}
@@ -389,9 +389,10 @@ export function WeightTracking({ item }: WeightTrackingProps) {
                                     value={log.weight}
                                     onChange={(value) => updateNewLog(index, 'weight', value)}
                                     minValue={0}
+                                    maxValue={9999}
                                     step={5}
                                     suffix="g"
-                                    className="w-[90px] sm:w-[100px] flex-1 min-w-[70px]"
+                                    className="w-[70px] flex-1 min-w-[70px]"
                                     compact
                                 />
                                 
