@@ -381,7 +381,7 @@ export function WeightTracking({ item }: WeightTrackingProps) {
                                     type="time"
                                     value={log.time}
                                     onChange={(e) => updateNewLog(index, 'time', e.target.value)}
-                                    className="w-auto min-w-[50px] bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none text-xs px-1"
+                                    className="w-auto bg-background text-xs px-1 [&::-webkit-calendar-picker-indicator]:!hidden [&::-webkit-calendar-picker-indicator]:!w-0 [&::-webkit-calendar-picker-indicator]:!m-0 [&::-webkit-calendar-picker-indicator]:!p-0 [&::-webkit-inner-spin-button]:hidden [&::-webkit-clear-button]:hidden [&::-webkit-datetime-edit-fields-wrapper]:p-0 [&::-webkit-time-picker-indicator]:hidden"
                                 />
                                 
                                 {/* Weight Input */}
