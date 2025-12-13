@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { Item, WeightLog } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -97,19 +97,19 @@ export function ItemCard({ item, onEdit, onProcess, onTracking }: ItemCardProps)
     const [lastWeightLog, setLastWeightLog] = useState<WeightLog | null>(null);
 
     // Calculate weight loss percentage if we have both initial weight and last weight
-    const calculateWeightLoss = () => {
+    const weightLoss = useMemo(() => {
         if (!item.initial_weight || !lastWeightLog) return null;
         const loss = ((item.initial_weight - lastWeightLog.weight) / item.initial_weight) * 100;
         return loss.toFixed(1);
-    };
-
-    const weightLoss = calculateWeightLoss();
+    }, [item.initial_weight, lastWeightLog]);
 
     useEffect(() => {
+        const abortController = new AbortController();
+        
         async function loadLastWeightLog() {
             const { data, error } = await supabase
                 .from('weight_logs')
-                .select('*')
+                .select('id, item_id, date, weight')
                 .eq('item_id', item.id)
                 .order('date', { ascending: false })
                 .limit(1);
@@ -119,11 +119,15 @@ export function ItemCard({ item, onEdit, onProcess, onTracking }: ItemCardProps)
                 return;
             }
 
-            if (data && data.length > 0) {
+            if (!abortController.signal.aborted && data && data.length > 0) {
                 setLastWeightLog(data[0]);
             }
         }
         loadLastWeightLog();
+
+        return () => {
+            abortController.abort();
+        };
     }, [item.id]);
 
     return (
