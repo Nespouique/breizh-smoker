@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import type { Smoke, Item } from '@/types';
@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import { ItemFormDialog } from '../wizard/ItemFormDialog';
 import { ProcessDialog } from '../wizard/ProcessDialog';
 import { WeightTrackingDialog } from '../wizard/WeightTrackingDialog';
@@ -27,6 +28,31 @@ export function SmokeView() {
     const [loading, setLoading] = useState(true);
     const [showEditTitleDialog, setShowEditTitleDialog] = useState(false);
     const [editedTitle, setEditedTitle] = useState('');
+
+    const itemsByCut = useMemo(() => {
+        const map = new Map<string, { title: string; items: Item[] }>();
+
+        for (const item of items) {
+            const rawCut = (item.cut ?? '').trim();
+            const key = rawCut ? rawCut.toLocaleLowerCase('fr-FR') : '__other__';
+            const title = rawCut || 'Autres';
+
+            const existing = map.get(key);
+            if (existing) {
+                existing.items.push(item);
+            } else {
+                map.set(key, { title, items: [item] });
+            }
+        }
+
+        const groups = Array.from(map.values());
+        groups.sort((a, b) => {
+            if (a.title === 'Autres') return 1;
+            if (b.title === 'Autres') return -1;
+            return a.title.localeCompare(b.title, 'fr-FR', { sensitivity: 'base' });
+        });
+        return groups;
+    }, [items]);
 
     useEffect(() => {
         loadSmoke();
@@ -226,15 +252,33 @@ export function SmokeView() {
             <main className="container mx-auto px-3 sm:px-6 py-6 max-w-7xl">
                 {/* Items Grid */}
                 {items.length > 0 ? (
-                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 mb-8">
-                        {items.map((item) => (
-                            <ItemCard 
-                                key={item.id} 
-                                item={item} 
-                                onEdit={handleEditItem}
-                                onProcess={handleProcessItem}
-                                onTracking={handleTrackingItem}
-                            />
+                    <div className="space-y-4 mb-8">
+                        {itemsByCut.map((group) => (
+                            <Card key={group.title} className="bg-card/50 backdrop-blur">
+                                <CardHeader className="py-4 sm:py-5">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <CardTitle className="text-lg sm:text-xl font-bold tracking-tight">
+                                            {group.title}
+                                        </CardTitle>
+                                        <Badge variant="secondary" className="shrink-0">
+                                            {group.items.length}
+                                        </Badge>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="pt-0">
+                                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                                        {group.items.map((item) => (
+                                            <ItemCard
+                                                key={item.id}
+                                                item={item}
+                                                onEdit={handleEditItem}
+                                                onProcess={handleProcessItem}
+                                                onTracking={handleTrackingItem}
+                                            />
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
                         ))}
                     </div>
                 ) : (
