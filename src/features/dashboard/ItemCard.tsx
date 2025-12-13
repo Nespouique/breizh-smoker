@@ -100,8 +100,10 @@ export function ItemCard({ item, onEdit, onProcess, onTracking }: ItemCardProps)
     const weightLoss = useMemo(() => {
         if (!item.initial_weight || !lastWeightLog) return null;
         const loss = ((item.initial_weight - lastWeightLog.weight) / item.initial_weight) * 100;
-        return loss.toFixed(1);
+        return loss.toFixed(0);
     }, [item.initial_weight, lastWeightLog]);
+
+    const showLossAndLastWeightSameRow = !!weightLoss && !!lastWeightLog;
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -166,34 +168,46 @@ export function ItemCard({ item, onEdit, onProcess, onTracking }: ItemCardProps)
                 <div className="grid grid-cols-2 gap-1.5 sm:gap-2 text-xs sm:text-sm">
                     {item.initial_weight && (
                         <div>
-                            <span className="text-muted-foreground">Poids initial:</span>
+                            <span className="text-muted-foreground">Poids initial :</span>
                             <span className="ml-1 font-medium">{item.initial_weight}g</span>
                         </div>
                     )}
                     {item.target_weight && (
                         <div>
-                            <span className="text-muted-foreground">Poids cible:</span>
+                            <span className="text-muted-foreground">Poids cible :</span>
                             <span className="ml-1 font-medium">{item.target_weight}g</span>
                         </div>
                     )}
-                    {item.curing_method && (
-                        <div className="col-span-2">
-                            <span className="text-muted-foreground">Salaison:</span>
-                            <span className="ml-1 font-medium">
-                                {item.curing_method === 'vacuum' ? 'Sous vide' : 'Traditionnelle'}
-                            </span>
-                        </div>
-                    )}
-                    {lastWeightLog && (
-                        <div className="col-span-2">
-                            <span className="text-muted-foreground">Dernière pesée:</span>
-                            <span className="ml-1 font-medium">
-                                {lastWeightLog.weight}g
-                                {weightLoss && (
-                                    <span className="text-muted-foreground"> (-{weightLoss}%)</span>
-                                )}
-                            </span>
-                        </div>
+                    {showLossAndLastWeightSameRow ? (
+                        <>
+                            <div>
+                                <span className="text-muted-foreground">Dernière pesée :</span>
+                                <span className="ml-1 font-medium">
+                                    {lastWeightLog.weight}g
+                                </span>
+                            </div>
+                            <div>
+                                <span className="text-muted-foreground">Perte :</span>
+                                <span className="ml-1 font-medium">-{weightLoss}%</span>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            {lastWeightLog && (
+                                <div className="col-span-2">
+                                    <span className="text-muted-foreground">Dernière pesée :</span>
+                                    <span className="ml-1 font-medium">
+                                        {lastWeightLog.weight}g
+                                    </span>
+                                </div>
+                            )}
+                            {weightLoss && (
+                                <div className="col-span-2">
+                                    <span className="text-muted-foreground">Perte :</span>
+                                    <span className="ml-1 font-medium">-{weightLoss}%</span>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
 
