@@ -109,18 +109,22 @@ export function ItemCard({ item, onEdit, onProcess, onTracking }: ItemCardProps)
         async function loadLastWeightLog() {
             const { data, error } = await supabase
                 .from('weight_logs')
-                .select('id, item_id, date, weight')
+                .select('id, date, weight')
                 .eq('item_id', item.id)
                 .order('date', { ascending: false })
                 .limit(1);
 
             if (error) {
-                console.error('Error loading last weight log:', error);
+                console.error(`Error loading last weight log for item ${item.id} (${item.name}):`, error);
                 return;
             }
 
-            if (!abortController.signal.aborted && data && data.length > 0) {
-                setLastWeightLog(data[0]);
+            if (abortController.signal.aborted) {
+                return;
+            }
+
+            if (data && data.length > 0) {
+                setLastWeightLog(data[0] as WeightLog);
             }
         }
         loadLastWeightLog();
@@ -128,7 +132,7 @@ export function ItemCard({ item, onEdit, onProcess, onTracking }: ItemCardProps)
         return () => {
             abortController.abort();
         };
-    }, [item.id]);
+    }, [item.id, item.name]);
 
     return (
         <Card className="hover:shadow-lg transition-all duration-300 bg-card/50 backdrop-blur group overflow-hidden">
