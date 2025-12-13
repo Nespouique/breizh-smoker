@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import type { Item } from '@/types';
+import { useState, useEffect, useMemo } from 'react';
+import type { Item, WeightLog } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Beef, Fish, Bird, PiggyBank, Pencil, ListTodo, ChartLine } from 'lucide-react';
 import { DynamicIcon, dynamicIconImports } from 'lucide-react/dynamic';
 import type { IconName } from 'lucide-react/dynamic';
+import { supabase } from '@/lib/supabase';
 
 // Composant pour charger l'icône avec skeleton
 function LazyIcon({ name, className }: { name: IconName; className?: string }) {
@@ -93,6 +94,45 @@ function getAnimalIcon(type: string) {
 export function ItemCard({ item, onEdit, onProcess, onTracking }: ItemCardProps) {
     const DefaultIcon = getAnimalIcon(item.type);
     const hasCustomIcon = !!item.icon;
+    const [lastWeightLog, setLastWeightLog] = useState<WeightLog | null>(null);
+
+    // Calculate weight loss percentage if we have both initial weight and last weight
+    const weightLoss = useMemo(() => {
+        if (!item.initial_weight || !lastWeightLog) return null;
+        const loss = ((item.initial_weight - lastWeightLog.weight) / item.initial_weight) * 100;
+        return loss.toFixed(1);
+    }, [item.initial_weight, lastWeightLog]);
+
+    useEffect(() => {
+        const abortController = new AbortController();
+        
+        async function loadLastWeightLog() {
+            const { data, error } = await supabase
+                .from('weight_logs')
+                .select('id, date, weight')
+                .eq('item_id', item.id)
+                .order('date', { ascending: false })
+                .limit(1);
+
+            if (error) {
+                console.error(`Error loading last weight log for item ${item.id} (${item.name}):`, error);
+                return;
+            }
+
+            if (abortController.signal.aborted) {
+                return;
+            }
+
+            if (data && data.length > 0) {
+                setLastWeightLog(data[0] as WeightLog);
+            }
+        }
+        loadLastWeightLog();
+
+        return () => {
+            abortController.abort();
+        };
+    }, [item.id, item.name]);
 
     return (
         <Card className="hover:shadow-lg transition-all duration-300 bg-card/50 backdrop-blur group overflow-hidden">
@@ -141,6 +181,17 @@ export function ItemCard({ item, onEdit, onProcess, onTracking }: ItemCardProps)
                             <span className="text-muted-foreground">Salaison:</span>
                             <span className="ml-1 font-medium">
                                 {item.curing_method === 'vacuum' ? 'Sous vide' : 'Traditionnelle'}
+                            </span>
+                        </div>
+                    )}
+                    {lastWeightLog && (
+                        <div className="col-span-2">
+                            <span className="text-muted-foreground">Dernière pesée:</span>
+                            <span className="ml-1 font-medium">
+                                {lastWeightLog.weight}g
+                                {weightLoss && (
+                                    <span className="text-muted-foreground"> (-{weightLoss}%)</span>
+                                )}
                             </span>
                         </div>
                     )}
