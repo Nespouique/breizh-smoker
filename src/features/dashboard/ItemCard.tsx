@@ -40,6 +40,7 @@ interface ItemCardProps {
     onEdit: (item: Item) => void;
     onProcess: (item: Item) => void;
     onTracking: (item: Item) => void;
+    refreshTrigger?: number;
 }
 
 const statusLabels: Record<Item['status'], string> = {
@@ -91,7 +92,7 @@ function getAnimalIcon(type: string) {
     return Beef;
 }
 
-export function ItemCard({ item, onEdit, onProcess, onTracking }: ItemCardProps) {
+export function ItemCard({ item, onEdit, onProcess, onTracking, refreshTrigger }: ItemCardProps) {
     const DefaultIcon = getAnimalIcon(item.type);
     const hasCustomIcon = !!item.icon;
     const [lastWeightLog, setLastWeightLog] = useState<WeightLog | null>(null);
@@ -127,6 +128,8 @@ export function ItemCard({ item, onEdit, onProcess, onTracking }: ItemCardProps)
 
             if (data && data.length > 0) {
                 setLastWeightLog(data[0] as WeightLog);
+            } else {
+                setLastWeightLog(null);
             }
         }
         loadLastWeightLog();
@@ -134,7 +137,7 @@ export function ItemCard({ item, onEdit, onProcess, onTracking }: ItemCardProps)
         return () => {
             abortController.abort();
         };
-    }, [item.id, item.name]);
+    }, [item.id, item.name, refreshTrigger]);
 
     return (
         <Card className="hover:shadow-lg transition-all duration-300 bg-card/50 backdrop-blur group overflow-hidden">

@@ -28,6 +28,7 @@ export function SmokeView() {
     const [loading, setLoading] = useState(true);
     const [showEditTitleDialog, setShowEditTitleDialog] = useState(false);
     const [editedTitle, setEditedTitle] = useState('');
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     const itemsByCut = useMemo(() => {
         const map = new Map<string, { title: string; items: Item[] }>();
@@ -187,6 +188,8 @@ export function SmokeView() {
                 }
             }
         }
+        // Increment refresh trigger to force ItemCard to reload weight logs
+        setRefreshTrigger(prev => prev + 1);
     }
 
     if (loading) {
@@ -274,6 +277,7 @@ export function SmokeView() {
                                                 onEdit={handleEditItem}
                                                 onProcess={handleProcessItem}
                                                 onTracking={handleTrackingItem}
+                                                refreshTrigger={refreshTrigger}
                                             />
                                         ))}
                                     </div>
@@ -355,6 +359,7 @@ export function SmokeView() {
                 <WeightTrackingDialog
                     item={selectedItem}
                     onClose={handleCloseDialog}
+                    onUpdated={handleItemUpdated}
                 />
             )}
 

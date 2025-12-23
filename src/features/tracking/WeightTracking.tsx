@@ -14,9 +14,10 @@ import { TrendingDown, Plus, X, ChevronDown, Save } from 'lucide-react';
 
 interface WeightTrackingProps {
     item: Item;
+    onWeightAdded?: () => void;
 }
 
-export function WeightTracking({ item }: WeightTrackingProps) {
+export function WeightTracking({ item, onWeightAdded }: WeightTrackingProps) {
     const [logs, setLogs] = useState<WeightLog[]>([]);
     const [loading, setLoading] = useState(false);
 
@@ -103,6 +104,7 @@ export function WeightTracking({ item }: WeightTrackingProps) {
         setNewLogs([]);
         setLoading(false);
         await loadLogs();
+        onWeightAdded?.();
     }
 
     async function deleteLog(logId: number) {

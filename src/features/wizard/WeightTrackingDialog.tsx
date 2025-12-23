@@ -11,9 +11,10 @@ import { ChartLine } from 'lucide-react';
 interface WeightTrackingDialogProps {
     item: Item;
     onClose: () => void;
+    onUpdated?: () => void;
 }
 
-export function WeightTrackingDialog({ item, onClose }: WeightTrackingDialogProps) {
+export function WeightTrackingDialog({ item, onClose, onUpdated }: WeightTrackingDialogProps) {
     return (
         <Dialog open onOpenChange={onClose}>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -25,7 +26,7 @@ export function WeightTrackingDialog({ item, onClose }: WeightTrackingDialogProp
                 </DialogHeader>
 
                 <div className="py-4 overflow-x-hidden">
-                    <WeightTracking item={item} />
+                    <WeightTracking item={item} onWeightAdded={onUpdated} />
                 </div>
             </DialogContent>
         </Dialog>
