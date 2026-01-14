@@ -34,30 +34,109 @@ Breizh Smoker est une application web permettant de gérer et suivre vos session
 - **Frontend** : React 19 + TypeScript + Vite
 - **UI** : Tailwind CSS + shadcn/ui
 - **Graphiques** : Recharts
-- **Backend** : Express + Prisma + PostgreSQL
+- **Backend** : Express + Prisma
+- **Base de données** : PostgreSQL 17
 - **Date** : date-fns
 
-## Installation
+## Architecture
 
-### Avec Docker Compose (Recommandé)
-
-```bash
-# Cloner le repo
-git clone https://github.com/Nespouique/breizh-smoker.git
-cd breizh-smoker
-
-# Lancer avec Docker Compose
-docker-compose up --build
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│    Frontend     │────▶│     Backend     │────▶│   PostgreSQL    │
+│  (React/Nginx)  │     │ (Express/Prisma)│     │                 │
+│     :80         │     │     :3001       │     │     :5432       │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+         │                                               │
+         └──────────── Prisma Studio :5555 ──────────────┘
 ```
 
-L'application sera accessible sur :
-- Frontend : http://localhost
-- API Backend : http://localhost:3001
+## Déploiement avec Docker Compose
+
+### Production (recommandé)
+
+Créez un fichier `docker-compose.yml` :
+
+```yaml
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: smoker-db
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: smoker
+      POSTGRES_USER: smoker
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-votre_mot_de_passe}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smoker -d smoker"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: nespouique/breizh-smoker-backend:latest
+    container_name: smoker-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://smoker:${DB_PASSWORD:-votre_mot_de_passe}@db:5432/smoker
+      PORT: 3001
+    expose:
+      - "3001"
+
+  frontend:
+    image: nespouique/breizh-smoker-frontend:latest
+    container_name: smoker-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+  prisma-studio:
+    image: nespouique/breizh-smoker-backend:latest
+    container_name: smoker-prisma-studio
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://smoker:${DB_PASSWORD:-votre_mot_de_passe}@db:5432/smoker
+    command: npx prisma studio --port 5555 --browser none
+    ports:
+      - "5555:5555"
+
+volumes:
+  postgres_data:
+```
+
+Lancez la stack :
+
+```bash
+# Optionnel : créer un fichier .env avec un mot de passe sécurisé
+echo "DB_PASSWORD=mon_mot_de_passe_securise" > .env
+
+# Lancer
+docker compose up -d
+```
+
+**Services disponibles :**
+| Service | URL | Description |
+|---------|-----|-------------|
+| Application | http://localhost | Interface utilisateur |
+| Prisma Studio | http://localhost:5555 | Interface d'administration de la BDD |
 
 ### Développement local
 
 ```bash
-# 1. Lancer PostgreSQL (Docker ou installation locale)
+# 1. Cloner le repo
+git clone https://github.com/Nespouique/breizh-smoker.git
+cd breizh-smoker
+
+# 2. Lancer PostgreSQL
 docker run -d --name smoker-db \
   -e POSTGRES_DB=smoker \
   -e POSTGRES_USER=smoker \
@@ -65,7 +144,7 @@ docker run -d --name smoker-db \
   -p 5432:5432 \
   postgres:17-alpine
 
-# 2. Backend
+# 3. Backend
 cd server
 cp .env.example .env
 npm install
@@ -73,9 +152,8 @@ npx prisma migrate deploy
 npx prisma generate
 npm run dev
 
-# 3. Frontend (nouveau terminal)
+# 4. Frontend (nouveau terminal)
 cd ..
-cp .env.example .env.local
 npm install
 npm run dev
 ```
@@ -89,19 +167,45 @@ DATABASE_URL=postgresql://smoker:smoker@localhost:5432/smoker
 PORT=3001
 ```
 
-### Frontend (.env.local)
+### Frontend (.env.local - optionnel pour le dev)
 
 ```env
 VITE_API_URL=http://localhost:3001/api
 ```
 
-## Migration des données existantes
+> **Note** : En production, le frontend utilise `/api` comme URL relative, et Nginx fait le proxy vers le backend.
 
-Si vous avez des données à importer :
+## Base de données
+
+### Schéma Prisma
+
+Le schéma est défini dans `server/prisma/schema.prisma` et comprend :
+
+- **Smoke** : Une session de fumage (ex: "Fumaisons 2025")
+- **Item** : Un morceau de viande/poisson avec toutes ses caractéristiques
+- **WeightLog** : Historique des pesées pour suivre l'affinage
+
+### Migrations
+
+Les migrations sont gérées automatiquement par Prisma au démarrage du backend :
 
 ```bash
-# Après le premier démarrage de Docker Compose
-docker exec -i smoker-db psql -U smoker -d smoker < scripts/migrate-data.sql
+# Appliquer les migrations manuellement
+npx prisma migrate deploy
+
+# Créer une nouvelle migration (développement)
+npx prisma migrate dev --name nom_de_la_migration
+```
+
+### Prisma Studio
+
+Interface graphique pour explorer et modifier les données :
+
+```bash
+# En local
+cd server && npx prisma studio
+
+# En production : accessible sur le port 5555
 ```
 
 ## Structure du projet
@@ -115,14 +219,38 @@ smoker/
 │   └── types/              # Types TypeScript
 ├── server/                 # Backend Express + Prisma
 │   ├── src/
-│   │   ├── routes/         # Routes API
+│   │   ├── routes/         # Routes API (smokes, items, weight-logs)
 │   │   └── index.ts        # Point d'entrée
 │   └── prisma/
-│       └── schema.prisma   # Schéma base de données
-├── scripts/                # Scripts utilitaires
-├── docker-compose.yml      # Orchestration Docker
-└── Dockerfile              # Build frontend
+│       ├── schema.prisma   # Schéma base de données
+│       └── migrations/     # Historique des migrations
+├── docker-compose.yml      # Orchestration Docker (dev)
+├── Dockerfile              # Build frontend (Nginx)
+└── server/Dockerfile       # Build backend
 ```
+
+## API Endpoints
+
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/api/smokes` | Liste toutes les sessions |
+| POST | `/api/smokes` | Crée une nouvelle session |
+| GET | `/api/smokes/:id` | Détails d'une session |
+| PUT | `/api/smokes/:id` | Met à jour une session |
+| DELETE | `/api/smokes/:id` | Supprime une session |
+| GET | `/api/items` | Liste tous les items |
+| POST | `/api/items` | Crée un nouvel item |
+| PUT | `/api/items/:id` | Met à jour un item |
+| DELETE | `/api/items/:id` | Supprime un item |
+| POST | `/api/weight-logs` | Ajoute une pesée |
+| DELETE | `/api/weight-logs/:id` | Supprime une pesée |
+
+## CI/CD
+
+Le projet utilise GitHub Actions pour builder et pousser automatiquement les images Docker sur DockerHub à chaque push sur `main` :
+
+- `nespouique/breizh-smoker-frontend:latest`
+- `nespouique/breizh-smoker-backend:latest`
 
 ## Licence
 

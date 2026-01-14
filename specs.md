@@ -21,6 +21,5 @@ Au niveau du parcours utilisateur :
 Tu peux utiliser le fichier processus.md pour avoir le détail du processus et le reprendre dans le site. Tu peux également t'appuyer sur le fichier 2025.md pour avoir des notes sur les morceaux de viande/poissons et les étapes suivies pour l'année en cours, cela permettra de tester le site et de remplir ces éléments.
 
 # Notes sur les MCP à utiliser et qui sont installés
-- Supabase pour pouvoir faire le stockage des données
 - Shadcn pour pouvoir rechercher et utiliser des composants
 - Lucid pour pouvoir rechercher et utiliser des icones
