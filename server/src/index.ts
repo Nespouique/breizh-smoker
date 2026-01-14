@@ -1,6 +1,8 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from './generated/prisma/client.js';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import smokesRouter from './routes/smokes.js';
@@ -12,7 +14,9 @@ const execAsync = promisify(exec);
 const app = express();
 const port = process.env.PORT || 3001;
 
-export const prisma = new PrismaClient();
+// Initialize Prisma with pg adapter
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+export const prisma = new PrismaClient({ adapter });
 
 app.use(cors());
 app.use(express.json());
