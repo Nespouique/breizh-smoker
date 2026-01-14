@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { getSmokes, createSmoke } from '@/lib/api';
 import type { Smoke } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -92,10 +92,7 @@ export function LandingPage() {
     }, []);
 
     async function loadSmokes() {
-        const { data, error } = await supabase
-            .from('smokes')
-            .select('*')
-            .order('created_at', { ascending: false });
+        const { data, error } = await getSmokes();
 
         if (error) {
             console.error('Error loading smokes:', error);
@@ -109,11 +106,7 @@ export function LandingPage() {
         if (!newSmokeName.trim()) return;
 
         setIsCreating(true);
-        const { data, error } = await supabase
-            .from('smokes')
-            .insert({ name: newSmokeName.trim(), notes: '' })
-            .select()
-            .single();
+        const { data, error } = await createSmoke({ name: newSmokeName.trim(), notes: '' });
 
         if (error) {
             console.error('Error creating smoke:', error);
@@ -124,7 +117,7 @@ export function LandingPage() {
         setShowNewSmokeDialog(false);
         setNewSmokeName('');
         setIsCreating(false);
-        navigate(`/smoke/${data.id}`);
+        if (data) navigate(`/smoke/${data.id}`);
     }
 
     return (

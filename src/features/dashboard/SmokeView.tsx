@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { getSmoke, getItems, updateSmoke } from '@/lib/api';
 import type { Smoke, Item } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -65,13 +65,9 @@ export function SmokeView() {
         setLoading(true);
 
         // Get smoke by ID
-        const { data: smokeData, error } = await supabase
-            .from('smokes')
-            .select('*')
-            .eq('id', parseInt(smokeId))
-            .single();
+        const { data: smokeData, error } = await getSmoke(parseInt(smokeId));
 
-        if (error) {
+        if (error || !smokeData) {
             console.error('Error loading smoke:', error);
             navigate('/');
             return;
@@ -81,11 +77,7 @@ export function SmokeView() {
         setNotes(smokeData?.notes || '');
 
         // Load items for this smoke
-        const { data: itemsData, error: itemsError } = await supabase
-            .from('items')
-            .select('*')
-            .eq('smoke_id', smokeData.id)
-            .order('name', { ascending: true });
+        const { data: itemsData, error: itemsError } = await getItems(smokeData.id);
 
         if (itemsError) {
             console.error('Error loading items:', itemsError);
@@ -99,10 +91,7 @@ export function SmokeView() {
     async function saveNotes() {
         if (!smoke) return;
 
-        const { error } = await supabase
-            .from('smokes')
-            .update({ notes })
-            .eq('id', smoke.id);
+        const { error } = await updateSmoke(smoke.id, { notes });
 
         if (error) {
             console.error('Error saving notes:', error);
@@ -124,10 +113,7 @@ export function SmokeView() {
     async function saveTitle() {
         if (!smoke || !editedTitle.trim()) return;
 
-        const { error } = await supabase
-            .from('smokes')
-            .update({ name: editedTitle.trim() })
-            .eq('id', smoke.id);
+        const { error } = await updateSmoke(smoke.id, { name: editedTitle.trim() });
 
         if (error) {
             console.error('Error saving title:', error);
@@ -171,12 +157,8 @@ export function SmokeView() {
     async function handleItemUpdated() {
         // Reload items and update selectedItem with fresh data
         if (!smoke) return;
-        
-        const { data: itemsData } = await supabase
-            .from('items')
-            .select('*')
-            .eq('smoke_id', smoke.id)
-            .order('name', { ascending: true });
+
+        const { data: itemsData } = await getItems(smoke.id);
 
         if (itemsData) {
             setItems(itemsData);

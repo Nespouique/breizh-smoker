@@ -1,8 +1,8 @@
-# 🥓 Breizh Smoker
+# Breizh Smoker
 
 Application de suivi de fumage et d'affinage de viandes et poissons.
 
-## 📖 Description
+## Description
 
 Breizh Smoker est une application web permettant de gérer et suivre vos sessions de fumage, salaison et affinage. Elle vous aide à :
 
@@ -11,7 +11,7 @@ Breizh Smoker est une application web permettant de gérer et suivre vos session
 - **Visualiser les projections** de perte de poids pour atteindre votre cible
 - **Documenter vos processus** de préparation, salaison et fumage
 
-## ✨ Fonctionnalités
+## Fonctionnalités
 
 ### Gestion des morceaux
 - Ajout de morceaux avec nom, poids initial et icône personnalisée
@@ -29,41 +29,101 @@ Breizh Smoker est une application web permettant de gérer et suivre vos session
 - Suivi de la salaison (type de sel, durée, retournements)
 - Configuration du fumage (type de bois, durée, température)
 
-## 🛠️ Technologies
+## Technologies
 
 - **Frontend** : React 19 + TypeScript + Vite
 - **UI** : Tailwind CSS + shadcn/ui
 - **Graphiques** : Recharts
-- **Backend** : Supabase (PostgreSQL + Auth)
+- **Backend** : Express + Prisma + PostgreSQL
 - **Date** : date-fns
 
-## 🚀 Installation
+## Installation
+
+### Avec Docker Compose (Recommandé)
 
 ```bash
 # Cloner le repo
 git clone https://github.com/Nespouique/breizh-smoker.git
 cd breizh-smoker
 
-# Installer les dépendances
-npm install
+# Lancer avec Docker Compose
+docker-compose up --build
+```
 
-# Lancer en développement
+L'application sera accessible sur :
+- Frontend : http://localhost
+- API Backend : http://localhost:3001
+
+### Développement local
+
+```bash
+# 1. Lancer PostgreSQL (Docker ou installation locale)
+docker run -d --name smoker-db \
+  -e POSTGRES_DB=smoker \
+  -e POSTGRES_USER=smoker \
+  -e POSTGRES_PASSWORD=smoker \
+  -p 5432:5432 \
+  postgres:17-alpine
+
+# 2. Backend
+cd server
+cp .env.example .env
+npm install
+npx prisma migrate deploy
+npx prisma generate
+npm run dev
+
+# 3. Frontend (nouveau terminal)
+cd ..
+cp .env.example .env.local
+npm install
 npm run dev
 ```
 
-## ⚙️ Configuration
+## Configuration
 
-Créez un fichier `.env.local` avec vos credentials Supabase :
+### Backend (server/.env)
 
 ```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+DATABASE_URL=postgresql://smoker:smoker@localhost:5432/smoker
+PORT=3001
 ```
 
-## 📱 Captures d'écran
+### Frontend (.env.local)
 
-*À venir*
+```env
+VITE_API_URL=http://localhost:3001/api
+```
 
-## 📄 Licence
+## Migration des données existantes
+
+Si vous avez des données à importer :
+
+```bash
+# Après le premier démarrage de Docker Compose
+docker exec -i smoker-db psql -U smoker -d smoker < scripts/migrate-data.sql
+```
+
+## Structure du projet
+
+```
+smoker/
+├── src/                    # Frontend React
+│   ├── components/         # Composants UI (shadcn)
+│   ├── features/           # Fonctionnalités métier
+│   ├── lib/                # Utilitaires (api.ts)
+│   └── types/              # Types TypeScript
+├── server/                 # Backend Express + Prisma
+│   ├── src/
+│   │   ├── routes/         # Routes API
+│   │   └── index.ts        # Point d'entrée
+│   └── prisma/
+│       └── schema.prisma   # Schéma base de données
+├── scripts/                # Scripts utilitaires
+├── docker-compose.yml      # Orchestration Docker
+└── Dockerfile              # Build frontend
+```
+
+## Licence
 
 MIT

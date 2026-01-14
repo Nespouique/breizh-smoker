@@ -5,7 +5,7 @@ import { useForm, useFormContext } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import type { Item } from '@/types';
-import { supabase } from '@/lib/supabase';
+import { createItem, updateItem, deleteItem } from '@/lib/api';
 import {
     Dialog,
     DialogContent,
@@ -687,7 +687,7 @@ function FormStepperComponent({
         let error;
 
         if (item?.id) {
-            const updateData: Record<string, unknown> = {
+            const updateData: Partial<Omit<Item, 'id' | 'created_at' | 'smoke_id'>> = {
                 name: formData.name,
                 type: formData.type,
                 icon: formData.icon || null,
@@ -703,7 +703,7 @@ function FormStepperComponent({
                 updateData.salt_amount = formData.curing_method === 'vacuum' ? formData.salt_amount : null;
                 updateData.sugar_amount = formData.curing_method === 'vacuum' ? formData.sugar_amount : null;
                 updateData.pepper_amount = formData.curing_method === 'vacuum' ? formData.pepper_amount : null;
-                
+
                 const now = new Date().toISOString();
                 const endDate = new Date();
                 if (formData.curing_method === 'vacuum') {
@@ -720,7 +720,7 @@ function FormStepperComponent({
                 if (formData.pepper_amount !== item.pepper_amount) updateData.pepper_amount = formData.pepper_amount;
             }
 
-            const result = await supabase.from('items').update(updateData).eq('id', item.id);
+            const result = await updateItem(item.id, updateData);
             error = result.error;
         } else {
             const now = new Date().toISOString();
@@ -731,26 +731,30 @@ function FormStepperComponent({
                 endDate.setHours(endDate.getHours() + curingHoursTraditional);
             }
 
-            const itemData = {
+            const itemData: Omit<Item, 'id' | 'created_at'> = {
                 smoke_id: smokeId,
                 name: formData.name,
                 type: formData.type,
                 icon: formData.icon || null,
-                cut: formData.cut,
+                cut: formData.cut || null,
                 initial_weight: formData.initial_weight,
                 diameter: formData.diameter,
                 target_weight: Math.round(targetWeight),
                 curing_method: formData.curing_method,
-                salt_amount: formData.curing_method === 'vacuum' ? formData.salt_amount : null,
-                sugar_amount: formData.curing_method === 'vacuum' ? formData.sugar_amount : null,
-                pepper_amount: formData.curing_method === 'vacuum' ? formData.pepper_amount : null,
+                salt_amount: formData.curing_method === 'vacuum' ? (formData.salt_amount ?? null) : null,
+                sugar_amount: formData.curing_method === 'vacuum' ? (formData.sugar_amount ?? null) : null,
+                pepper_amount: formData.curing_method === 'vacuum' ? (formData.pepper_amount ?? null) : null,
                 spices: serializeSpices(formData.spices),
-                status: 'curing' as const,
+                status: 'curing',
                 curing_start_date: now,
                 curing_end_date: endDate.toISOString(),
+                rinsing_date: null,
+                drying_start_date: null,
+                smoking_date: null,
+                aging_start_date: null,
             };
 
-            const result = await supabase.from('items').insert([itemData]);
+            const result = await createItem(itemData);
             error = result.error;
         }
 
@@ -848,7 +852,7 @@ function FormStepperComponent({
                                         <AlertDialogAction
                                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                             onClick={async () => {
-                                                await supabase.from('items').delete().eq('id', item.id);
+                                                await deleteItem(item.id);
                                                 onSaved();
                                                 onClose();
                                             }}

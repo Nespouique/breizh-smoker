@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Beef, Fish, Bird, PiggyBank, Pencil, ListTodo, ChartLine } from 'lucide-react';
 import { DynamicIcon, dynamicIconImports } from 'lucide-react/dynamic';
 import type { IconName } from 'lucide-react/dynamic';
-import { supabase } from '@/lib/supabase';
+import { getWeightLogs } from '@/lib/api';
 
 // Composant pour charger l'icône avec skeleton
 function LazyIcon({ name, className }: { name: IconName; className?: string }) {
@@ -108,14 +108,9 @@ export function ItemCard({ item, onEdit, onProcess, onTracking, refreshTrigger }
 
     useEffect(() => {
         const abortController = new AbortController();
-        
+
         async function loadLastWeightLog() {
-            const { data, error } = await supabase
-                .from('weight_logs')
-                .select('id, date, weight')
-                .eq('item_id', item.id)
-                .order('date', { ascending: false })
-                .limit(1);
+            const { data, error } = await getWeightLogs(item.id);
 
             if (error) {
                 console.error(`Error loading last weight log for item ${item.id} (${item.name}):`, error);
@@ -127,7 +122,8 @@ export function ItemCard({ item, onEdit, onProcess, onTracking, refreshTrigger }
             }
 
             if (data && data.length > 0) {
-                setLastWeightLog(data[0] as WeightLog);
+                // Get the last one (data is sorted by date ascending)
+                setLastWeightLog(data[data.length - 1]);
             } else {
                 setLastWeightLog(null);
             }

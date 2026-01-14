@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Smoke {
+  id         Int      @id @default(autoincrement())
+  name       String
+  notes      String?
+  created_at DateTime @default(now())
+  items      Item[]
+
+  @@map("smokes")
+}
+
+model Item {
+  id               Int       @id @default(autoincrement())
+  smoke_id         Int
+  smoke            Smoke     @relation(fields: [smoke_id], references: [id], onDelete: Cascade)
+  name             String
+  type             String
+  icon             String?
+  cut              String?
+  initial_weight   Float?
+  diameter         Float?
+  target_weight    Float?
+  curing_method    String?
+  status           String    @default("prep")
+  salt_amount      Float?
+  sugar_amount     Float?
+  pepper_amount    Float?
+  spices           String?
+  curing_start_date DateTime?
+  curing_end_date   DateTime?
+  rinsing_date      DateTime?
+  drying_start_date DateTime?
+  smoking_date      DateTime?
+  aging_start_date  DateTime?
+  created_at        DateTime  @default(now())
+  weight_logs       WeightLog[]
+
+  @@map("items")
+}
+
+model WeightLog {
+  id      Int      @id @default(autoincrement())
+  item_id Int
+  item    Item     @relation(fields: [item_id], references: [id], onDelete: Cascade)
+  weight  Float
+  date    DateTime @default(now())
+
+  @@map("weight_logs")
+}

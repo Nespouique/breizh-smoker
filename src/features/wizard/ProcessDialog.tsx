@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { Item, WeightLog } from '@/types';
-import { supabase } from '@/lib/supabase';
+import { getWeightLogs, updateItem } from '@/lib/api';
 import confetti from 'canvas-confetti';
 import {
     Dialog,
@@ -37,15 +37,12 @@ export function ProcessDialog({ item, onClose, onUpdated }: ProcessDialogProps) 
     useEffect(() => {
         async function fetchLastWeightLog() {
             if (item.status === 'aging') {
-                const { data } = await supabase
-                    .from('weight_logs')
-                    .select('*')
-                    .eq('item_id', item.id)
-                    .order('date', { ascending: false })
-                    .limit(1)
-                    .single();
-                
-                setLastWeightLog(data);
+                const { data } = await getWeightLogs(item.id);
+
+                if (data && data.length > 0) {
+                    // Get the last one (data is sorted by date ascending)
+                    setLastWeightLog(data[data.length - 1]);
+                }
             }
         }
         fetchLastWeightLog();
@@ -339,10 +336,7 @@ END:VCALENDAR`;
                 break;
         }
 
-        const { error } = await supabase
-            .from('items')
-            .update(updates)
-            .eq('id', item.id);
+        const { error } = await updateItem(item.id, updates);
 
         setIsUpdating(false);
 

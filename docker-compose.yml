@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: smoker-db
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: smoker
+      POSTGRES_USER: smoker
+      POSTGRES_PASSWORD: smoker
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smoker -d smoker"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: nespouique/breizh-smoker-backend:latest
+    container_name: smoker-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://smoker:smoker@db:5432/smoker
+      PORT: 3001
+    expose:
+      - "3001"
+
+  frontend:
+    image: nespouique/breizh-smoker-frontend:latest
+    container_name: smoker-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+  prisma-studio:
+    image: nespouique/breizh-smoker-backend:latest
+    container_name: smoker-prisma-studio
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://smoker:smoker@db:5432/smoker
+    command: npx prisma studio --port 5555 --browser none
+    ports:
+      - "5555:5555"
+
+volumes:
+  postgres_data:

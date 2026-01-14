@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { getWeightLogs, createWeightLogs, deleteWeightLog } from '@/lib/api';
 import type { Item, WeightLog } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,11 +38,7 @@ export function WeightTracking({ item, onWeightAdded }: WeightTrackingProps) {
     }, [item.id]);
 
     async function loadLogs() {
-        const { data, error } = await supabase
-            .from('weight_logs')
-            .select('*')
-            .eq('item_id', item.id)
-            .order('date', { ascending: true });
+        const { data, error } = await getWeightLogs(item.id);
 
         if (error) {
             console.error('Error loading weight logs:', error);
@@ -83,17 +79,15 @@ export function WeightTracking({ item, onWeightAdded }: WeightTrackingProps) {
             const [hours, minutes] = log.time.split(':').map(Number);
             const dateTime = new Date(log.date);
             dateTime.setHours(hours, minutes, 0, 0);
-            
+
             return {
                 item_id: item.id,
-                weight: log.weight,
+                weight: log.weight as number,
                 date: dateTime.toISOString(),
             };
         });
 
-        const { error } = await supabase
-            .from('weight_logs')
-            .insert(logsToInsert);
+        const { error } = await createWeightLogs(logsToInsert);
 
         if (error) {
             console.error('Error adding weight logs:', error);
@@ -108,10 +102,7 @@ export function WeightTracking({ item, onWeightAdded }: WeightTrackingProps) {
     }
 
     async function deleteLog(logId: number) {
-        const { error } = await supabase
-            .from('weight_logs')
-            .delete()
-            .eq('id', logId);
+        const { error } = await deleteWeightLog(logId);
 
         if (error) {
             console.error('Error deleting weight log:', error);
