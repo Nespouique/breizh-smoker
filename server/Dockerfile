@@ -18,7 +18,7 @@ RUN npx prisma generate
 # Copy source code
 COPY . .
 
-# Build TypeScript
+# Build TypeScript (this will compile src/generated/prisma to dist/generated/prisma)
 RUN npm run build
 
 # Production stage
@@ -34,11 +34,8 @@ RUN npm ci --omit=dev
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/prisma.config.ts ./
 
-# Copy built files (includes generated Prisma client in dist/generated)
+# Copy built files (includes compiled generated Prisma client)
 COPY --from=build /app/dist ./dist
-
-# Copy the generated Prisma client from src to dist
-COPY --from=build /app/src/generated ./dist/generated
 
 # Expose port
 EXPOSE 3001
